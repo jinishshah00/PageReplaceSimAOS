@@ -30,16 +30,16 @@ int cmp_arrival_time(const void* a, const void* b) {
     return ((Process*)a)->arrival_time - ((Process*)b)->arrival_time;
 }
 
-int generate_delta_i() {
+int generate_delta_i(int page_size) {
         int r = rand() % 11;  // This will generate a value between 0 and 10 inclusive
         int delta_i;
-        if (r >= 0 && r < 7) {
+        if (r >= 0 && r < 2) {
             // Generate Δi to be -1, 0, or +1
             delta_i = (rand() % 3) - 1; // Generates -1, 0, or +1
             // printf("Generated Δi: %d\n", delta_i);
         } else {
-            // Generate the new page reference “j,” 2 ≤ |Δi| ≤ 9            
-            delta_i = (rand() % 8) + 2; // Generates values between -9 and 9
+            // Generate the new page reference “j,” 2 ≤ |Δi| ≤ page_size - 1
+            delta_i = (rand() % (page_size - 1)) + 2; // Generates values between - page_size - 1 and page_size - 1
             int sign = rand() % 2;
             delta_i = sign == 0? -delta_i : delta_i;
         }
@@ -81,8 +81,8 @@ int main(int argc, char* argv[]) {
     // Array of processes
     Process Q[TOTAL_PROCESSES];
 
-    char* current_algorithm_name = "FIFO";
-    ReplacementAlgorithm current_algorithm = FIFO;
+    char* current_algorithm_name = "MFU";
+    current_algorithm = MFU;
 
     // Initialize 150 processes
     for (int i = 0; i < TOTAL_PROCESSES; i++) {
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 
         for (int i = end + 1; i < TOTAL_PROCESSES; i++) {
             if ((Q[i].arrival_time * 1000 <= sim_time) && (get_free_page_size() >= 4)) {
-                fprintf(fp, "[Time %d.%03d], Process: %s, Enter, Size: %d pages, Service Duration: %d seconds\n", 
+                fprintf(fp, "[Time %d.%03d] Process: %s, Enter, Size: %d pages, Service Duration: %d seconds\n", 
                         sim_time / 1000, sim_time % 1000, 
                         Q[i].name, Q[i].size_pages, Q[i].service_duration);
                 handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
             // if process has not finished
             if(Q[i].remaining_time > 0) {
                 // update current page to random reference page
-                Q[i].current_page = Q[i].current_page + generate_delta_i();
+                Q[i].current_page = Q[i].current_page + generate_delta_i(Q[i].size_pages);
 
                 if(Q[i].current_page < 0) 
                     Q[i].current_page += Q[i].size_pages;
