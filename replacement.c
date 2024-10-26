@@ -45,5 +45,18 @@ int select_victim_page_random() {
     return rand() % MAIN_MEMORY_PAGES;
 }
 int select_victim_page() {
-
+    switch(current_algorithm) {
+        case FIFO:
+            return select_victim_page_fifo();
+        case LRU:
+            return select_victim_page_lru();
+        case LFU:
+            return select_victim_page_lfu();
+        case MFU:
+            return select_victim_page_mfu();
+        case RANDOM_REPL:
+            return select_victim_page_random();
+        default:
+            return -1;
+    }
 }

@@ -11,7 +11,7 @@ typedef enum {
     LFU,
     MFU,
     RANDOM_REPL,
-    TOTAL_ALGOS
+    TOTAL_ALGOS //what is this for?
 } ReplacementAlgorithm;
 
 typedef struct Page {
