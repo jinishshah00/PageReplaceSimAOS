@@ -38,7 +38,7 @@ typedef struct JobQueue {
     Process* head;
 } JobQueue;
 
-typedef struct FreePageList {
+typedef struct FreePageList { // ---> is this the frame number?
     int page_number;
     struct FreePageList* next;
 } FreePageList;
