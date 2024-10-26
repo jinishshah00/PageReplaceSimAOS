@@ -62,7 +62,9 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
     if(free_page_list != NULL) {
         physical_page = free_page_list->page_number;
         // remove from free page list
+        FreePageList* free_page = free_page_list;
         free_page_list = free_page_list->next;
+        free(free_page);
     } else {
         // need to evict a page based on replacement algorithm
         physical_page = select_victim_page();
@@ -76,7 +78,6 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
         if(victim_page != NULL) {
             // find the victim process by iterating through the current simulation's job queue
             Process* victim_proc = NULL;
-
             for(int i=0;i< TOTAL_PROCESSES; i++) {
                 if(strcmp(Q[i].name, victim_page->process_name) == 0) {
                     victim_proc = &Q[i];
@@ -91,9 +92,8 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
                         victim_proc->page_table[vp] = -1;
                         break;
                     }
-                }
+                } 
             }
-
             // log the eviction
             fprintf(fp, "[Time %d.%03d] Evicting Page %d of Process %s from Physical Page %d using %s Replacement\n",
                     current_time / 1000, current_time % 1000,
@@ -109,12 +109,11 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
             memory_map.pages[physical_page] = NULL;
         }
     }
-
     // assign the physical page to the process
     proc->page_table[virtual_page] = physical_page;
 
     // allocate and assign Page structure
-    Page* new_page = (Page*)malloc(sizeof(Page));
+    Page* new_page = (Page*) malloc(sizeof(Page));
     if(!new_page) {
         fprintf(fp, "Memory allocation failed for new Page\n");
         exit(EXIT_FAILURE);

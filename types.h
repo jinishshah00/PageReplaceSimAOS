@@ -16,14 +16,14 @@ typedef enum {
 
 typedef struct Page {
     int page_number;               // physical page number
-    char process_name[4];          // process name (e.g., "a0", "b1")
+    char process_name[5];          // process name (e.g., "a0", "b1")
     int virtual_page_number;       // virtual page number within the process
     int last_access_time;          // for LRU
     int access_count;              // for LFU/MFU
 } Page;
 
 typedef struct Process {
-    char name[4];                  // process name (e.g., "a0", "b1")
+    char name[5];                  // process name (e.g., "a0", "b1")
     int size_mb;                   // size in MB
     int size_pages;                // size in pages
     int arrival_time;              // arrival time in seconds

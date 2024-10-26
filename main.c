@@ -81,18 +81,21 @@ int main(int argc, char* argv[]) {
     // Array of processes
     Process Q[TOTAL_PROCESSES];
 
-    char* current_algorithm_name = "MFU";
-    current_algorithm = MFU;
+    char* current_algorithm_name = "RANDOM_REPL";
+    current_algorithm = RANDOM_REPL;
 
     // Initialize 150 processes
     for (int i = 0; i < TOTAL_PROCESSES; i++) {
         
         // Q[i].name = "P" + i;  // Assign process ID
-        snprintf(Q[i].name, 4, "P%d", i);   // to set the name as P0, P1, P2... etc
+        snprintf(Q[i].name, sizeof(Q[i].name), "P%d", i);   // to set the name as P0, P1, P2... etc
         Q[i].size_mb = process_sizes[rand() % 4];  // Random process size from options
         Q[i].size_pages = Q[i].size_mb; // --> extra value used
         Q[i].arrival_time = rand() % 60;  // Random arrival time (within 60 seconds)
-        Q[i].service_duration = MAX(rand() % MAX_SERVICE_DURATION, MIN_SERVICE_DURATION);  // Random service duration (1-5 seconds)
+        Q[i].service_duration = rand() % MAX_SERVICE_DURATION;  // Random service duration (1-5 seconds)
+        if(Q[i].service_duration < MIN_SERVICE_DURATION) {
+            Q[i].service_duration = MIN_SERVICE_DURATION;
+        }
         Q[i].remaining_time = Q[i].service_duration * 1000;    // initially set to service time
         Q[i].page_table = malloc(sizeof(int) * Q[i].size_pages);     //initally set to null
         Q[i].current_page = 0;  // All processes start with page 0
@@ -103,12 +106,11 @@ int main(int argc, char* argv[]) {
     qsort(Q, TOTAL_PROCESSES, sizeof(Process), cmp_arrival_time);
 
     // Print process information
-    for (int i = 0; i < TOTAL_PROCESSES; i++) {
+    /*for (int i = 0; i < TOTAL_PROCESSES; i++) {
         printf("Process ID: %s, Size: %d MB, Arrival Time: %d seconds, Duration: %d seconds\n",
                Q[i].name, Q[i].size_mb, Q[i].arrival_time, Q[i].service_duration);
-    }
-
-
+    }*/
+ 
     // initialise free page list and the memory map
     initialize_free_page_list();
     initialize_memory_map();
@@ -148,24 +150,23 @@ int main(int argc, char* argv[]) {
                 
                 
                 // check if page is in memory
-                int *physical_page = malloc(sizeof(int));
-                *physical_page = -1;
-                if(is_page_in_memory(&Q[i], Q[i].current_page, physical_page)) {
-                    if(*physical_page == -1) {
+                int physical_page = -1;
+                if(is_page_in_memory(&Q[i], Q[i].current_page, &physical_page)) {
+                    if(physical_page == -1) {
                         fprintf(fp, "Page not in memory!\n");
                         continue;
                     }
                     //fprintf(fp, "Page %d for process %s found in memory\n", Q[i].current_page, Q[i].name);
                     fprintf(fp, "[Time %d.%03d] Process: %s, Page-Referenced: %d, Page-In-Memory: %d \n", 
                         sim_time / 1000, sim_time % 1000,
-                        Q[i].name, Q[i].current_page, *physical_page);
+                        Q[i].name, Q[i].current_page, physical_page);
                     // update last access time and count
-                    memory_map.pages[*physical_page]->last_access_time = sim_time;
-                    memory_map.pages[*physical_page]->access_count += 1;
+                    memory_map.pages[physical_page]->last_access_time = sim_time;
+                    memory_map.pages[physical_page]->access_count += 1;
 
                     // update replacement info for FIFO
                     if(current_algorithm == FIFO) {
-                        replacement_info.fifo_order[*physical_page] = replacement_info.fifo_counter++;
+                        replacement_info.fifo_order[physical_page] = replacement_info.fifo_counter++;
                     }
                     //update hit count
                 } else {
