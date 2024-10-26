@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "replacement.h"
 #include "globals.h"
 

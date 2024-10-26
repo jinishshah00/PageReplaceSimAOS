@@ -56,7 +56,7 @@ void update_page_access(int physical_page, int current_time) {
 }
 
 // swaps a page into memory, evicting a victim if necessary
-void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics* stats, FILE* fp) {
+void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics* stats, FILE* fp, Process* Q) {
     // check if a free page is available
     int physical_page = -1;
     if(free_page_list != NULL) {
@@ -76,14 +76,14 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
         if(victim_page != NULL) {
             // find the victim process by iterating through the current simulation's job queue
             Process* victim_proc = NULL;
-            Process* p = current_sim_job_queue->head;
-            while(p != NULL) {
-                if(strcmp(p->name, victim_page->process_name) == 0) {
-                    victim_proc = p;
+
+            for(int i=0;i< TOTAL_PROCESSES; i++) {
+                if(strcmp(Q[i].name, victim_page->process_name) == 0) {
+                    victim_proc = &Q[i];
                     break;
                 }
-                p = p->next;
             }
+
             if(victim_proc != NULL) {
                 // update victim's page table
                 for(int vp = 0; vp < victim_proc->size_pages; vp++) {
@@ -135,16 +135,16 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
     fprintf(fp, "[Time %d.%03d] Process %s swapped in Page %d to Physical Page %d\n",
             current_time / 1000, current_time % 1000,
             proc->name, virtual_page, physical_page);
-    print_memory_map(fp);
+    //print_memory_map(fp);
 
     // update statistics
-    update_statistics(stats, false); // pass 'false' to indicate a miss
-    stats->processes_swapped_in += 1;
+    //update_statistics(stats, false); // pass 'false' to indicate a miss
+    //stats->processes_swapped_in += 1;
 }
 
 // handles a page fault by swapping in the required page
-void handle_page_fault(Process* proc, int virtual_page, int current_time, Statistics* stats, FILE* fp) {
-    swap_page_in(proc, virtual_page, current_time, stats, fp);
+void handle_page_fault(Process* proc, int virtual_page, int current_time, Statistics* stats, FILE* fp, Process* Q) {
+    swap_page_in(proc, virtual_page, current_time, stats, fp, Q);
 }
 
 // releases all pages occupied by a process and frees memory
