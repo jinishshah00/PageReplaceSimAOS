@@ -33,7 +33,7 @@ int cmp_arrival_time(const void* a, const void* b) {
 int generate_delta_i(int page_size) {
         int r = rand() % 11;  // This will generate a value between 0 and 10 inclusive
         int delta_i;
-        if (r >= 0 && r < 2) {
+        if (r >= 0 && r < 7) {
             // Generate Δi to be -1, 0, or +1
             delta_i = (rand() % 3) - 1; // Generates -1, 0, or +1
             // printf("Generated Δi: %d\n", delta_i);
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
         Q[i].size_mb = process_sizes[rand() % 4];  // Random process size from options
         Q[i].size_pages = Q[i].size_mb; // --> extra value used
         Q[i].arrival_time = rand() % 60;  // Random arrival time (within 60 seconds)
-        Q[i].service_duration = rand() % MAX_SERVICE_DURATION;  // Random service duration (1-5 seconds)
+        Q[i].service_duration = rand() % (MAX_SERVICE_DURATION + 1);  // Random service duration (1-5 seconds)
         if(Q[i].service_duration < MIN_SERVICE_DURATION) {
             Q[i].service_duration = MIN_SERVICE_DURATION;
         }
