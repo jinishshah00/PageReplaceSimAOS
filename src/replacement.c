@@ -34,9 +34,7 @@ int select_victim_page_lfu() {
     return last_least_used;
 }
 int select_victim_page_mfu() {
-    printf("Selecting victim using MFU\n");
     int last_most_used = 0, mfu_access_count = memory_map.pages[0]->access_count;
-    printf("Selecting victim using MFU 1\n");
     for(int i = 1; i < MAIN_MEMORY_PAGES; i++) {
         if(memory_map.pages[i]->access_count > mfu_access_count) {
             mfu_access_count = memory_map.pages[i]->access_count;

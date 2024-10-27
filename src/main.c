@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
         }
 
         for(int i = 0; i <= end; i++) {
-
+            
             // if process has not finished
             if(Q[i].remaining_time > 0) {
                 // update current page to random reference page
@@ -177,6 +177,7 @@ int main(int argc, char* argv[]) {
                 
                 
                 // check if page is in memory
+                stats->total_references++;
                 int physical_page = -1;
                 if(is_page_in_memory(&Q[i], Q[i].current_page, &physical_page)) {
                     if(physical_page == -1) {
@@ -190,15 +191,13 @@ int main(int argc, char* argv[]) {
                     // update last access time and count
                     memory_map.pages[physical_page]->last_access_time = sim_time;
                     memory_map.pages[physical_page]->access_count += 1;
-
-                    // update replacement info for FIFO
-                    if(current_algorithm == FIFO) {
-                        replacement_info.fifo_order[physical_page] = replacement_info.fifo_counter++;
-                    }
+                    
                     //update hit count
+                    stats->hit_count++;
                 } else {
                     handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
                     //update miss count
+                    stats->miss_count++;
                 }
                 Q[i].remaining_time -= 100;
                 if(Q[i].remaining_time <= 0) {
@@ -212,6 +211,10 @@ int main(int argc, char* argv[]) {
         }
         usleep(1000);
     }
-    printf("Number of processes that were sucessfully swapped is %d\n", (swaps));
+    printf("Number of processes that were sucessfully swapped is %d\n", (stats->processes_swapped_in));
+    printf("Hit/Miss - %f\n", (float)(stats->hit_count)/(float)(stats->miss_count));
+    printf("Hits - %d\n", (stats->hit_count));
+    printf("Miss - %d\n", (stats->miss_count));
+    printf("Total Page References - %d\n", (stats->total_references));
     return 0;
 }
