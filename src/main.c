@@ -216,7 +216,9 @@ int main(int argc, char* argv[]) {
         usleep(1000);
     }
     printf("Number of processes that were sucessfully swapped is %d\n", (stats->processes_swapped_in));
-    printf("Hit/Miss - %f\n", (float)(stats->hit_count/stats->miss_count));
+    printf("Hit/Miss - %f\n", (float)(stats->hit_count)/(float)(stats->miss_count));
+    printf("Hits - %d\n", (stats->hit_count));
+    printf("Miss - %d\n", (stats->miss_count));
     printf("Total Page References - %d\n", (stats->total_references));
     return 0;
 }
