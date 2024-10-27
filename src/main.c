@@ -160,6 +160,7 @@ int main(int argc, char* argv[]) {
                 handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
                 print_memory_map(fp);
                 end = i;
+                stats->miss_count++;
             } else break;
         }
 
