@@ -4,7 +4,6 @@
 #include "types.h"
 
 // global Variables
-extern int swaps;
 extern FreePageList* free_page_list;
 extern JobQueue job_queue;
 extern MemoryMap memory_map;

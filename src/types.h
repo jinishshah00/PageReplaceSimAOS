@@ -60,16 +60,16 @@ typedef struct ReplacementInfo {
     int fifo_order[MAIN_MEMORY_PAGES];
 } ReplacementInfo;
 
-// event Structures for precise timing
-typedef struct Event {
-    int time_ms;           // in milliseconds
-    Process* proc;
-    int virtual_page;
-    struct Event* next;
-} Event;
+// // event Structures for precise timing
+// typedef struct Event {
+//     int time_ms;           // in milliseconds
+//     Process* proc;
+//     int virtual_page;
+//     struct Event* next;
+// } Event;
 
-typedef struct EventQueue {
-    Event* head;
-} EventQueue;
+// typedef struct EventQueue {
+//     Event* head;
+// } EventQueue;
 
 #endif // tYPES_H
