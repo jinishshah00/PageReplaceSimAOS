@@ -15965,7 +15965,7 @@ P35 P48 P51 P77 P104 P16 P71 P2 P5 P35
 P71 P2 P5 P35 P51 P77 P16 P71 P2 P5 
 
 [Time 38.800] Process: P35, Page-Referenced: 3, Page-In-Memory: 11 
-[Time 38.800] Evicting Page 15 of Process P104 from Physical Page 1 using FIFO Replacement
+[Time 38.800] Evicting Page 15 of Process P104 from Physical Page 1 using LRU Replacement
 [Time 38.800] Process P48 swapped in Page 7 to Physical Page 1
 Memory Map:
 P124 P48 P16 P104 P16 P71 P51 P51 P16 P2 
@@ -15980,7 +15980,7 @@ P35 P48 P51 P77 P104 P16 P71 P2 P5 P35
 P71 P2 P5 P35 P51 P77 P16 P71 P2 P5 
 
 [Time 38.800] Process: P51, Page-Referenced: 13, Page-In-Memory: 94 
-[Time 38.800] Evicting Page 24 of Process P16 from Physical Page 37 using FIFO Replacement
+[Time 38.800] Evicting Page 24 of Process P16 from Physical Page 37 using LRU Replacement
 [Time 38.800] Process P77 swapped in Page 15 to Physical Page 37
 Memory Map:
 P124 P48 P16 P104 P16 P71 P51 P51 P16 P2 
@@ -16700,7 +16700,7 @@ P16 P48 P16 P77 P51 P16 P89 P51 P16 P51
 P89 P48 P51 P77 P48 P16 P89 P2 P15 P15 
 P77 P2 P2 P2 P51 P77 P16 P94 P2 P15 
 
-[Time 39.800] Evicting Page 10 of Process P16 from Physical Page 12 using FIFO Replacement
+[Time 39.800] Evicting Page 10 of Process P16 from Physical Page 12 using LRU Replacement
 [Time 39.800] Process P51 swapped in Page 12 to Physical Page 12
 Memory Map:
 P124 P48 P16 P94 P16 P89 P51 P51 P16 P2 
@@ -16717,7 +16717,7 @@ P77 P2 P2 P2 P51 P77 P16 P94 P2 P15
 [Time 39.800] Process: P77, Page-Referenced: 2, Page-In-Memory: 83 
 [Time 39.800] Process: P143, Page-Referenced: 1, Page-In-Memory: 59 
 [Time 39.800] Process: P15, Page-Referenced: 0, Page-In-Memory: 89 
-[Time 39.800] Evicting Page 30 of Process P16 from Physical Page 29 using FIFO Replacement
+[Time 39.800] Evicting Page 30 of Process P16 from Physical Page 29 using LRU Replacement
 [Time 39.800] Process P89 swapped in Page 27 to Physical Page 29
 Memory Map:
 P124 P48 P16 P94 P16 P89 P51 P51 P16 P2 
