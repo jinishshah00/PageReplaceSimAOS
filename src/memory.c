@@ -58,6 +58,7 @@ void update_page_access(int physical_page, int current_time) {
 // swaps a page into memory, evicting a victim if necessary
 void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics* stats, FILE* fp, Process* Q) {
     // check if a free page is available
+    swaps++;
     int physical_page = -1;
     if(free_page_list != NULL) {
         physical_page = free_page_list->page_number;
@@ -134,7 +135,7 @@ void swap_page_in(Process* proc, int virtual_page, int current_time, Statistics*
     fprintf(fp, "[Time %d.%03d] Process %s swapped in Page %d to Physical Page %d\n",
             current_time / 1000, current_time % 1000,
             proc->name, virtual_page, physical_page);
-    //print_memory_map(fp);
+    print_memory_map(fp);
 
     // update statistics
     //update_statistics(stats, false); // pass 'false' to indicate a miss

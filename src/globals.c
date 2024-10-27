@@ -1,5 +1,6 @@
 #include "globals.h"
 
+int swaps = 0;
 FreePageList* free_page_list = 0;
 JobQueue job_queue = { 0 };
 MemoryMap memory_map;

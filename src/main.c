@@ -67,8 +67,35 @@ int main(int argc, char* argv[]) {
 
     // Process sizes (in pages/MB)
     int process_sizes[4] = {5, 11, 17, 31};
+    char* current_algorithm_name;
 
-    if (argc == 4 && atoi(argv[3]) == 1) {      // ---> why?
+    if (argc < 3){
+        printf("usage: %s [FIFO, LRU, LFU, MFU or Random] randomSeed(RAND for random).\n", argv[0]);
+        return -1;
+    }
+
+    if(strcmp(argv[1], "FIFO") == 0){
+        current_algorithm = FIFO;
+        current_algorithm_name = "FIFO";
+    }else if(strcmp(argv[1], "LRU") == 0){
+        current_algorithm = LRU;
+        current_algorithm_name = "LRU";
+    }else if(strcmp(argv[1], "LFU") == 0){
+        current_algorithm = LFU;
+        current_algorithm_name = "LFU";
+    }else if(strcmp(argv[1], "MFU") == 0){
+        current_algorithm = MFU;
+        current_algorithm_name = "MFU";
+    }else if(strcmp(argv[1], "Random") == 0){
+        current_algorithm = RANDOM_REPL;
+        current_algorithm_name = "RANDOM_REPL";
+    }else {
+        printf("usage: %s [FIFO, LRU, LFU, MFU or Random] randomSeed(RAND for random).\n", argv[0]);
+        return -1;
+    }
+
+
+    if (argc == 4 && atoi(argv[3]) == 1) {     
         stepTwo = 1;
     }
 
@@ -81,8 +108,8 @@ int main(int argc, char* argv[]) {
     // Array of processes
     Process Q[TOTAL_PROCESSES];
 
-    char* current_algorithm_name = "RANDOM_REPL";
-    current_algorithm = RANDOM_REPL;
+    // char* current_algorithm_name = "RANDOM_REPL";
+    // current_algorithm = RANDOM_REPL;
 
     // Initialize 150 processes
     for (int i = 0; i < TOTAL_PROCESSES; i++) {
@@ -131,7 +158,7 @@ int main(int argc, char* argv[]) {
                         sim_time / 1000, sim_time % 1000, 
                         Q[i].name, Q[i].size_pages, Q[i].service_duration);
                 handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
-                //print_memory_map(fp);
+                print_memory_map(fp);
                 end = i;
             } else break;
         }
@@ -179,12 +206,12 @@ int main(int argc, char* argv[]) {
                     fprintf(fp, "[Time %d.%03d] Process: %s, Exit, Size: %d pages, Service Duration: %d seconds\n", 
                         sim_time / 1000, sim_time % 1000,
                         Q[i].name, Q[i].size_pages, Q[i].service_duration);
-                    //print_memory_map(fp);
+                    print_memory_map(fp);
                 }
             }
         }
         usleep(1000);
     }
-
+    printf("Number of processes that were sucessfully swapped is %d\n", (swaps));
     return 0;
 }

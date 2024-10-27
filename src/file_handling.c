@@ -17,14 +17,16 @@ void create_outputs_directory() {
     }
 }
 
-// prints the current memory map to the specified file
 void print_memory_map(FILE* fp) {
-    fprintf(fp, "Memory Map: ");
+    fprintf(fp, "Memory Map:\n");
     for(int i = 0; i < MAIN_MEMORY_PAGES; i++) {
         if(memory_map.pages[i] != NULL)
-            fprintf(fp, "%s", memory_map.pages[i]->process_name);
+            fprintf(fp, "%s ", memory_map.pages[i]->process_name);
         else
-            fprintf(fp, ".");
+            fprintf(fp, " . ");
+
+        if ((i + 1) % 10 == 0)
+            fprintf(fp, "\n");
     }
     fprintf(fp, "\n");
 }
