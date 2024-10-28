@@ -4,6 +4,7 @@
 #include "globals.h"
 
 int select_victim_page_fifo() {
+    // printf("FIFO");
     int fifo_page = 0, least_fifo_counter = replacement_info.fifo_order[0];
     for(int i = 1; i < MAIN_MEMORY_PAGES; i++) {
         if(replacement_info.fifo_order[i] < least_fifo_counter) {
@@ -14,6 +15,7 @@ int select_victim_page_fifo() {
     return fifo_page;
 }
 int select_victim_page_lru() {
+    // printf("LRU");
     int last_recenty_used = 0, lru_access_time = memory_map.pages[0]->last_access_time;
     for(int i = 1; i < MAIN_MEMORY_PAGES; i++) {
         if(memory_map.pages[i]->last_access_time < lru_access_time) {
@@ -24,6 +26,7 @@ int select_victim_page_lru() {
     return last_recenty_used;
 }
 int select_victim_page_lfu() {
+    // printf("LFU");
     int last_least_used = 0, lfu_access_count = memory_map.pages[0]->access_count;
     for(int i = 1; i < MAIN_MEMORY_PAGES; i++) {
         if(memory_map.pages[i]->access_count < lfu_access_count) {
@@ -34,6 +37,8 @@ int select_victim_page_lfu() {
     return last_least_used;
 }
 int select_victim_page_mfu() {
+    //  printf("MFU");
+    // printf("Selecting victim using MFU\n");
     int last_most_used = 0, mfu_access_count = memory_map.pages[0]->access_count;
     for(int i = 1; i < MAIN_MEMORY_PAGES; i++) {
         if(memory_map.pages[i]->access_count > mfu_access_count) {
@@ -44,6 +49,7 @@ int select_victim_page_mfu() {
     return last_most_used;
 }
 int select_victim_page_random() {
+    // printf("Random");
     return rand() % MAIN_MEMORY_PAGES;
 }
 int select_victim_page() {

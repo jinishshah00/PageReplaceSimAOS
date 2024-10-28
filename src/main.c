@@ -63,7 +63,10 @@ void initialize_page_table(Process* proc) {
 }
 
 int main(int argc, char* argv[]) {
-    int stepTwo = 0;
+    int thit = 0;
+    int tmiss = 0;
+    int tpswapin = 0;
+    int ttref = 0;
 
     // Process sizes (in pages/MB)
     int process_sizes[4] = {5, 11, 17, 31};
@@ -94,128 +97,134 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-
-    if (argc == 4 && atoi(argv[3]) == 1) {     
-        stepTwo = 1;
-    }
-
     // Seed for random number generation
     if (strcmp(argv[2], "RAND") == 0)
         srand(time(NULL));  // Use system time if 'RAND' is specified
     else
         srand(atoi(argv[2]));  // Use provided seed value
 
-    // Array of processes
-    Process Q[TOTAL_PROCESSES];
 
-    // char* current_algorithm_name = "RANDOM_REPL";
-    // current_algorithm = RANDOM_REPL;
+    for (int i = 0; i < 5; i++) {
+        // Array of processes
+        Process Q[TOTAL_PROCESSES];
 
-    // Initialize 150 processes
-    for (int i = 0; i < TOTAL_PROCESSES; i++) {
-        
-        // Q[i].name = "P" + i;  // Assign process ID
-        snprintf(Q[i].name, sizeof(Q[i].name), "P%d", i);   // to set the name as P0, P1, P2... etc
-        Q[i].size_mb = process_sizes[rand() % 4];  // Random process size from options
-        Q[i].size_pages = Q[i].size_mb; // --> extra value used
-        Q[i].arrival_time = rand() % 60;  // Random arrival time (within 60 seconds)
-        Q[i].service_duration = rand() % (MAX_SERVICE_DURATION + 1);  // Random service duration (1-5 seconds)
-        if(Q[i].service_duration < MIN_SERVICE_DURATION) {
-            Q[i].service_duration = MIN_SERVICE_DURATION;
-        }
-        Q[i].remaining_time = Q[i].service_duration * 1000;    // initially set to service time
-        Q[i].page_table = malloc(sizeof(int) * Q[i].size_pages);     //initally set to null
-        Q[i].current_page = 0;  // All processes start with page 0
-        initialize_page_table(&Q[i]);
-    }
+        // char* current_algorithm_name = "RANDOM_REPL";
+        // current_algorithm = RANDOM_REPL;
 
-    // Sort processes based on their arrival time
-    qsort(Q, TOTAL_PROCESSES, sizeof(Process), cmp_arrival_time);
-
-    // Print process information
-    /*for (int i = 0; i < TOTAL_PROCESSES; i++) {
-        printf("Process ID: %s, Size: %d MB, Arrival Time: %d seconds, Duration: %d seconds\n",
-               Q[i].name, Q[i].size_mb, Q[i].arrival_time, Q[i].service_duration);
-    }*/
- 
-    // initialise free page list and the memory map
-    initialize_free_page_list();
-    initialize_memory_map();
-    create_outputs_directory();
-
-    char page_replacement_filename[256];
-    snprintf(page_replacement_filename, sizeof(page_replacement_filename), "outputs/%s-run.txt", current_algorithm_name);
-    FILE* fp = fopen(page_replacement_filename, "w");
-
-    Statistics* stats = malloc(sizeof(Statistics));
-    
-    int end = -1;
-    for (int sim_time = 0; sim_time < SIMULATION_TIME_SEC * 1000; sim_time += 100) {
-
-        for (int i = end + 1; i < TOTAL_PROCESSES; i++) {
-            if ((Q[i].arrival_time * 1000 <= sim_time) && (get_free_page_size() >= 4)) {
-                fprintf(fp, "[Time %d.%03d] Process: %s, Enter, Size: %d pages, Service Duration: %d seconds\n", 
-                        sim_time / 1000, sim_time % 1000, 
-                        Q[i].name, Q[i].size_pages, Q[i].service_duration);
-                handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
-                print_memory_map(fp);
-                end = i;
-                stats->miss_count++;
-            } else break;
-        }
-
-        for(int i = 0; i <= end; i++) {
+        // Initialize 150 processes
+        for (int i = 0; i < TOTAL_PROCESSES; i++) {
             
-            // if process has not finished
-            if(Q[i].remaining_time > 0) {
-                // update current page to random reference page
-                Q[i].current_page = Q[i].current_page + generate_delta_i(Q[i].size_pages);
+            // Q[i].name = "P" + i;  // Assign process ID
+            snprintf(Q[i].name, sizeof(Q[i].name), "P%d", i);   // to set the name as P0, P1, P2... etc
+            Q[i].size_mb = process_sizes[rand() % 4];  // Random process size from options
+            Q[i].size_pages = Q[i].size_mb; // --> extra value used
+            Q[i].arrival_time = rand() % 60;  // Random arrival time (within 60 seconds)
+            Q[i].service_duration = rand() % MAX_SERVICE_DURATION;  // Random service duration (1-5 seconds)
+            if(Q[i].service_duration < MIN_SERVICE_DURATION) {
+                Q[i].service_duration = MIN_SERVICE_DURATION;
+            }
+            Q[i].remaining_time = Q[i].service_duration * 1000;    // initially set to service time
+            Q[i].page_table = malloc(sizeof(int) * Q[i].size_pages);     //initally set to null
+            Q[i].current_page = 0;  // All processes start with page 0
+            initialize_page_table(&Q[i]);
+        }
 
-                if(Q[i].current_page < 0) 
-                    Q[i].current_page += Q[i].size_pages;
-                else    
-                    Q[i].current_page = Q[i].current_page % Q[i].size_pages;
-                
-                
-                // check if page is in memory
-                stats->total_references++;
-                int physical_page = -1;
-                if(is_page_in_memory(&Q[i], Q[i].current_page, &physical_page)) {
-                    if(physical_page == -1) {
-                        fprintf(fp, "Page not in memory!\n");
-                        continue;
-                    }
-                    //fprintf(fp, "Page %d for process %s found in memory\n", Q[i].current_page, Q[i].name);
-                    fprintf(fp, "[Time %d.%03d] Process: %s, Page-Referenced: %d, Page-In-Memory: %d \n", 
-                        sim_time / 1000, sim_time % 1000,
-                        Q[i].name, Q[i].current_page, physical_page);
-                    // update last access time and count
-                    memory_map.pages[physical_page]->last_access_time = sim_time;
-                    memory_map.pages[physical_page]->access_count += 1;
-                    
-                    //update hit count
-                    stats->hit_count++;
-                } else {
+        // Sort processes based on their arrival time
+        qsort(Q, TOTAL_PROCESSES, sizeof(Process), cmp_arrival_time);
+
+        // Print process information
+        /*for (int i = 0; i < TOTAL_PROCESSES; i++) {
+            printf("Process ID: %s, Size: %d MB, Arrival Time: %d seconds, Duration: %d seconds\n",
+                Q[i].name, Q[i].size_mb, Q[i].arrival_time, Q[i].service_duration);
+        }*/
+    
+        // initialise free page list and the memory map
+        initialize_free_page_list();
+        initialize_memory_map();
+        create_outputs_directory();
+
+        char page_replacement_filename[256];
+        snprintf(page_replacement_filename, sizeof(page_replacement_filename), "outputs/%s%d-run.txt", current_algorithm_name, i+1);
+        FILE* fp = fopen(page_replacement_filename, "w");
+
+        Statistics* stats = malloc(sizeof(Statistics));
+        
+        int end = -1;
+        for (int sim_time = 0; sim_time < SIMULATION_TIME_SEC * 1000; sim_time += 100) {
+
+            for (int i = end + 1; i < TOTAL_PROCESSES; i++) {
+                if ((Q[i].arrival_time * 1000 <= sim_time) && (get_free_page_size() >= 4)) {
+                    fprintf(fp, "[Time %d.%03d] Process: %s, Enter, Size: %d pages, Service Duration: %d seconds\n", 
+                            sim_time / 1000, sim_time % 1000, 
+                            Q[i].name, Q[i].size_pages, Q[i].service_duration);
                     handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
-                    //update miss count
-                    stats->miss_count++;
-                }
-                Q[i].remaining_time -= 100;
-                if(Q[i].remaining_time <= 0) {
-                    release_pages(&Q[i]);
-                    fprintf(fp, "[Time %d.%03d] Process: %s, Exit, Size: %d pages, Service Duration: %d seconds\n", 
-                        sim_time / 1000, sim_time % 1000,
-                        Q[i].name, Q[i].size_pages, Q[i].service_duration);
                     print_memory_map(fp);
+                    end = i;
+                } else break;
+            }
+
+            for(int i = 0; i <= end; i++) {
+                
+                // if process has not finished
+                if(Q[i].remaining_time > 0) {
+                    // update current page to random reference page
+                    Q[i].current_page = Q[i].current_page + generate_delta_i(Q[i].size_pages);
+
+                    if(Q[i].current_page < 0) 
+                        Q[i].current_page += Q[i].size_pages;
+                    else    
+                        Q[i].current_page = Q[i].current_page % Q[i].size_pages;
+                    
+                    
+                    // check if page is in memory
+                    stats->total_references++;
+                    int physical_page = -1;
+                    if(is_page_in_memory(&Q[i], Q[i].current_page, &physical_page)) {
+                        if(physical_page == -1) {
+                            fprintf(fp, "Page not in memory!\n");
+                            continue;
+                        }
+                        //fprintf(fp, "Page %d for process %s found in memory\n", Q[i].current_page, Q[i].name);
+                        fprintf(fp, "[Time %d.%03d] Process: %s, Page-Referenced: %d, Page-In-Memory: %d \n", 
+                            sim_time / 1000, sim_time % 1000,
+                            Q[i].name, Q[i].current_page, physical_page);
+                        // update last access time and count
+                        memory_map.pages[physical_page]->last_access_time = sim_time;
+                        memory_map.pages[physical_page]->access_count += 1;
+
+                        // update replacement info for FIFO
+                        if(current_algorithm == FIFO) {
+                            replacement_info.fifo_order[physical_page] = replacement_info.fifo_counter++;
+                        }
+                        //update hit count
+                        stats->hit_count++;
+                    } else {
+                        handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
+                        //update miss count
+                        stats->miss_count++;
+                    }
+                    Q[i].remaining_time -= 100;
+                    if(Q[i].remaining_time <= 0) {
+                        release_pages(&Q[i]);
+                        fprintf(fp, "[Time %d.%03d] Process: %s, Exit, Size: %d pages, Service Duration: %d seconds\n", 
+                            sim_time / 1000, sim_time % 1000,
+                            Q[i].name, Q[i].size_pages, Q[i].service_duration);
+                        print_memory_map(fp);
+                    }
                 }
             }
+            usleep(1000);
         }
-        usleep(1000);
+        thit += stats->hit_count;
+        tmiss += stats->miss_count;
+        tpswapin += stats->processes_swapped_in;
+        ttref += stats->total_references;
     }
-    printf("Number of processes that were sucessfully swapped is %d\n", (stats->processes_swapped_in));
-    printf("Hit/Miss - %f\n", (float)(stats->hit_count)/(float)(stats->miss_count));
-    printf("Hits - %d\n", (stats->hit_count));
-    printf("Miss - %d\n", (stats->miss_count));
-    printf("Total Page References - %d\n", (stats->total_references));
+    
+    printf("Average Number of processes that were sucessfully swapped is %f\n", (float)(thit)/5);
+    printf("Average Hit/Miss - %f\n", (float)(thit)/(float)(tmiss));
+    printf("Average Hits - %f\n", (float)(thit)/5);
+    printf("Average Miss - %f\n", (float)(tmiss)/5);
+    printf("Average Total Page References - %f\n", (float)(ttref)/5);
     return 0;
 }
