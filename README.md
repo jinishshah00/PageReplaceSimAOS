@@ -1,42 +1,48 @@
-# Page Replacement Algorithm Simulator - Input Parameters
+```markdown
+# Page Replacement Algorithms Simulation
 
-This simulator allows you to experiment with various page replacement algorithms using input parameters at runtime.
-
-## Usage
-
-```bash
-./simulator [ALGORITHM] [RANDOM_SEED] [STEP_OPTION]
+## Project Structure
+```
+/PageReplacementAlgo/
+  ├── /src/
+  │   ├── main.c
+  │   ├── constants.h
+  │   ├── globals.c
+  │   └── (other source files)
+  ├── /outputs/
+  │   └── output.txt (for each algorithm, repeated 5 times)
+  ├── Makefile
+  ├── .gitignore
+  └── README.md
 ```
 
-### Input Parameters:
+## Instructions
 
-1. **Algorithm Selection**:
-   - Choose from the following algorithms:
-     - `FCFS` (First-Come-First-Serve)
-     - `LRU` (Least Recently Used)
-     - `LFU` (Least Frequently Used)
-     - `MFU` (Most Frequently Used)
-     - `Random` (Random Page Replacement)
+1. **Compilation:**
+   - Navigate to the `/PageReplacementAlgo` directory and run:
+     ```bash
+     make
+     ```
+   - This will compile the project and generate an executable named `paging`.
 
-   Example:
-   ```bash
-   ./simulator LRU
-   ```
+2. **Execution:**
+   - Run the executable using:
+     ```bash
+     ./paging [Algorithm] [RandomSeed]
+     ```
+     - **Algorithm Options:** `FIFO`, `LRU`, `LFU`, `MFU`, `Random`
+     - **Random Seed:** Provide an integer or use `RAND` for a random seed.
 
-2. **Random Seed**:
-   - Use `RAND` for a random seed based on system time or provide a specific integer for reproducibility.
+   - **Example Command:**
+     ```bash
+     ./paging FIFO 12345
+     ```
 
-   Example:
-   ```bash
-   ./simulator FCFS 1234
-   ```
+3. **Output:**
+   - Results for each algorithm run are saved in the `/outputs/` directory.
+   - Each output file contains logs for five runs, showing page references, hit/miss ratios, and page evictions.
 
-3. **Step Option** (Optional):
-   - Use `1` to enable step mode after 100 page accesses.
 
-### Example Commands:
-
-```bash
-./simulator Random RAND
-./simulator MFU 1234 1
+## Note
+Ensure all source files are in the `/src/` directory before compiling.
 ```
