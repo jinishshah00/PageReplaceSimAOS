@@ -1,0 +1,5 @@
+# Ignore output files
+paging
+
+# Ignore all files in the outputs directory
+outputs/*
