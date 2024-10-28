@@ -215,7 +215,7 @@ int main(int argc, char* argv[]) {
             }
             usleep(1000);
         }
-        printf("%d\n",stats->hit_count);
+        // printf("%d\n",stats->hit_count);
         thit += stats->hit_count;
         tmiss += stats->miss_count;
         tpswapin += stats->processes_swapped_in;
