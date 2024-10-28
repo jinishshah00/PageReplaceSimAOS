@@ -1,7 +1,10 @@
-```markdown
-# Page Replacement Algorithms Simulation
+README  
+------
 
-## Project Structure
+**Project:** Page Replacement Algorithms Simulation
+
+**Folder Structure:**
+
 ```
 /PageReplacementAlgo/
   ├── /src/
@@ -16,33 +19,43 @@
   └── README.md
 ```
 
-## Instructions
+### Instructions
 
-1. **Compilation:**
-   - Navigate to the `/PageReplacementAlgo` directory and run:
-     ```bash
-     make
-     ```
-   - This will compile the project and generate an executable named `paging`.
+1. **Compilation:**  
+   Navigate to the `/PageReplacementAlgo` directory and execute:
 
-2. **Execution:**
-   - Run the executable using:
-     ```bash
-     ./paging [Algorithm] [RandomSeed]
-     ```
-     - **Algorithm Options:** `FIFO`, `LRU`, `LFU`, `MFU`, `Random`
-     - **Random Seed:** Provide an integer or use `RAND` for a random seed.
+   ```bash
+   make
+   ```
 
-   - **Example Command:**
-     ```bash
-     ./paging FIFO 12345
-     ```
+   This will compile the program and produce an executable named `paging`.
 
-3. **Output:**
-   - Results for each algorithm run are saved in the `/outputs/` directory.
-   - Each output file contains logs for five runs, showing page references, hit/miss ratios, and page evictions.
+2. **Execution:**  
+   Run the executable using:
 
+   ```bash
+   ./paging [Algorithm] [RandomSeed]
+   ```
 
-## Note
-Ensure all source files are in the `/src/` directory before compiling.
-```
+   - **Algorithm Options:** `FIFO`, `LRU`, `LFU`, `MFU`, `Random`
+   - **Random Seed:** Use any integer or `RAND` for a random seed.
+
+   **Example Command:**
+
+   ```bash
+   ./paging FIFO 12345
+   ```
+
+3. **Output:**  
+   - Each algorithm’s output is saved in the `/outputs/` folder.
+   - Each output file contains logs for five runs, capturing details of page references, hits/misses, and evictions.
+
+### File Descriptions
+
+- **main.c:** Handles program initialization and main simulation logic.
+- **constants.h:** Defines global constants for the simulation.
+- **globals.c:** Manages shared variables and memory structures.
+
+### Note
+
+Ensure all necessary source files are in the `/src/` directory before compiling.
