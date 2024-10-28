@@ -160,6 +160,7 @@ int main(int argc, char* argv[]) {
                     handle_page_fault(&Q[i], Q[i].current_page, sim_time, stats, fp, Q);
                     print_memory_map(fp);
                     end = i;
+                    stats->miss_count++;
                 } else break;
             }
 
@@ -192,10 +193,6 @@ int main(int argc, char* argv[]) {
                         memory_map.pages[physical_page]->last_access_time = sim_time;
                         memory_map.pages[physical_page]->access_count += 1;
 
-                        // update replacement info for FIFO
-                        if(current_algorithm == FIFO) {
-                            replacement_info.fifo_order[physical_page] = replacement_info.fifo_counter++;
-                        }
                         //update hit count
                         stats->hit_count++;
                     } else {
